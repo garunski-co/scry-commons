@@ -1,24 +1,25 @@
 # Local install
 
-## Setup 
+## Setup
 
 1. [Rancher Desktop](https://github.com/rancher-sandbox/rancher-desktop/releases)
 
 1. For my local setup i had to switch the Virtual Machine Emulation to use VZ for Rancher Desktop. Go to Preferences -> Virtual Machine -> Emulation and select VZ.
 
 1. [Cillium for Rancher Desktop](https://docs.cilium.io/en/stable/gettingstarted/k8s-install-default/#create-the-cluster) - see instructions for the override file
-add `override.yaml` file to the installation directory for Rancher Desktop (`~/Library/Application\ Support/rancher-desktop/lima/_config/`)
+   add `override.yaml` file to the installation directory for Rancher Desktop (`~/Library/Application\ Support/rancher-desktop/lima/_config/`)
 
-``` yaml copy filename="override.yaml" file=local/override.yaml
+```yaml copy filename="override.yaml" file=local/override.yaml
+
 ```
 
-``` sh copy
+```sh copy
 cp override.yaml ~/Library/Application\ Support/rancher-desktop/lima/_config/override.yaml
 ```
 
 1. Install CRDs for GatewayAPI
 
-``` sh copy
+```sh copy
 kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v0.7.0/config/crd/standard/gateway.networking.k8s.io_gatewayclasses.yaml
 kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v0.7.0/config/crd/standard/gateway.networking.k8s.io_gateways.yaml
 kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v0.7.0/config/crd/standard/gateway.networking.k8s.io_httproutes.yaml
@@ -27,34 +28,34 @@ kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v
 
 ```
 
-1. Cilium with Gateway API support on the Rancher Desktop Cluster, (Cilium install)[https://docs.cilium.io/en/stable/network/servicemesh/gateway-api/gateway-api/#gs-gateway-api]. 
+1. Cilium with Gateway API support on the Rancher Desktop Cluster, (Cilium install)[https://docs.cilium.io/en/stable/network/servicemesh/gateway-api/gateway-api/#gs-gateway-api].
 
 Using Cilium CLI
 
-``` sh copy
+```sh copy
 cilium install --version 1.14.2 \
     --set kubeProxyReplacement=true \
     --set gatewayAPI.enabled=true
 ```
 
 1. Install Postgres
-``` sh copy
-helm upgrade -i --repo https://garunski-co.github.io/scry-helm-charts/ postgres postgres-local 
+
+```sh copy
+helm upgrade -i --repo https://garunski-co.github.io/scry-helm-charts/ postgres postgres-local
 ```
 
 1. Add Gateway API Class - if its missing from the cluster
 
-``` yaml copy filename="cilium-gateway-class.yaml" file=local/cilium-gateway-class.yaml
+```yaml copy filename="cilium-gateway-class.yaml" file=local/cilium-gateway-class.yaml
+
 ```
 
-
-``` sh copy
+```sh copy
 kubectl apply -f ./local/cilium-gateway-class.yaml
 ```
 
 1. Install Directus
-``` sh copy
-helm upgrade -i --repo https://garunski-co.github.io/scry-helm-charts/ directus directus-local 
+
+```sh copy
+helm upgrade -i --repo https://garunski-co.github.io/scry-helm-charts/ directus directus-local
 ```
-
-
