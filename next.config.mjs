@@ -9,7 +9,8 @@ const withNextra = nextra({
   },
 })({
   output: "export",
-  images: {unoptimized: true}
+  basePath: process.env.NODE_ENV === "production" ? "/scry-commons" : "",
+  images: { unoptimized: true },
 });
 
 export default withNextra;
