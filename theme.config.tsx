@@ -8,15 +8,20 @@ const config: DocsThemeConfig = {
     link: "https://github.com/garunski-co/scry-commons",
   },
   docsRepositoryBase: "https://github.com/garunski-co/scry-commons/tree/main",
-  footer: {
-    text: "Scry Internal Documentation",
-  },
   useNextSeoProps() {
     const { asPath } = useRouter();
       return {
-        titleTemplate: `${asPath !== "/" ? "%s – " : "" }Scry Internal Documentation"`,
+        titleTemplate: `${asPath !== "/" ? "%s – " : "" }Scry Internal Documentation`,
       };
   },
+  navigation: false,
+  footer: {
+    text: (
+      <span>
+         © {new Date().getFullYear()}  Garunski
+      </span>
+    )
+  }
 };
 
 export default config;
