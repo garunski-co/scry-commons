@@ -11,8 +11,3 @@ spec:
       allowedRoutes:
         kinds:
           - kind: HTTPRoute
-        namespaces:
-          from: Selector
-          selector:
-            matchLabels:
-              scry-app: "true"

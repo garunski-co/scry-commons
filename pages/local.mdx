@@ -56,12 +56,47 @@ import { Steps, Callout } from 'nextra/components'
     ```
 
     ```sh copy
-    kubectl apply -f ./local/cilium-gateway-class.yaml
+    kubectl apply -f cilium-gateway-class.yaml
     ```
 
-### Install Directus
+### Install Local Gateway 
+
+    ```yaml copy filename="local-gateway.yaml" file=local/local-gateway.yaml
+    ```
 
     ```sh copy
-    helm upgrade -i --repo https://garunski-co.github.io/scry-helm-charts/ directus directus-local
+    kubectl apply -f local-gateway.yaml
     ```
+
+### Install Local Postgres DB
+
+    <Callout type="info" emoji="ℹ️">
+    Any local installation will do. 
+    </Callout>
+
+    ```sh copy
+    helm upgrade -i --repo https://garunski-co.github.io/scry-helm-charts/ postgres postgres-local
+    ```
+
+### Install Admin Directus
+
+    ```yaml copy filename="admin-values.yaml" file=local/admin-values.yaml
+    ```
+    
+    ```sh copy
+    helm upgrade directus-admin directus-local -i --repo https://garunski-co.github.io/scry-helm-charts/ -f admin-values.yaml
+    ```
+
+### Install API Directus
+
+    ```yaml copy filename="api-values.yaml" file=local/api-values.yaml
+    ```
+    
+    ```sh copy
+    helm upgrade directus-api directus-local -i --repo https://garunski-co.github.io/scry-helm-charts/ -f api-values.yaml
+    ```
+
+### add gateway to Hosts
+    run tasks for udpateHosts
+
 </Steps>

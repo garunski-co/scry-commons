@@ -1,0 +1,22 @@
+version: '3'
+
+vars: 
+  GATEWAY:
+    sh: kubectl get gateway directus-local-gw -o jsonpath='{.status.addresses[0].value}'
+  APPS: admin api
+
+tasks:
+  updateHosts:
+    deps: [removeOldHosts, addNewHosts]
+
+  removeOldHosts:
+    cmds:
+      - for: { var: APPS }
+        cmd: sudo sed -i '' '/{{.ITEM}}\.local\.scryapp\.website/d' /etc/hosts
+    silent: true
+
+  addNewHosts:
+    cmds:
+        - for: { var: APPS }
+          cmd: sudo sh -c 'echo "{{.GATEWAY}} {{.ITEM}}.local.scryapp.website" >> /etc/hosts'
+    silent: true
