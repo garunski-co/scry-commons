@@ -3,10 +3,12 @@ import { Steps, Callout } from 'nextra/components'
 # Local MacOS install
 
 <Steps>
+### Install [Task](https://taskfile.dev/)
+
 ### Install [Rancher Desktop](https://github.com/rancher-sandbox/rancher-desktop/releases)
     
     <Callout type="warning" emoji="⚠️">
-    For my local setup i had to switch the Virtual Machine Emulation to use VZ for Rancher Desktop. Go to Preferences -> Virtual Machine -> Emulation and select VZ.
+    For my local setup, I had to switch the Virtual Machine Emulation to use VZ for Rancher Desktop. Go to Preferences -> Virtual Machine -> Emulation and select VZ.
     </Callout>
 
 ### [Cillium for Rancher Desktop](https://docs.cilium.io/en/stable/gettingstarted/k8s-install-default/#create-the-cluster)
@@ -19,44 +21,33 @@ import { Steps, Callout } from 'nextra/components'
     ```
 
     ```sh copy
-    cp override.yaml ~/Library/Application\ Support/rancher-desktop/lima/_config/override.yaml
+    task local:add-rd-overwrite
     ```
 
 ### Install CRDs for GatewayAPI
 
     ```sh copy
-    kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v0.7.0/config/crd/standard/gateway.networking.k8s.io_gatewayclasses.yaml
-    kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v0.7.0/config/crd/standard/gateway.networking.k8s.io_gateways.yaml
-    kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v0.7.0/config/crd/standard/gateway.networking.k8s.io_httproutes.yaml
-    kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v0.7.0/config/crd/standard/gateway.networking.k8s.io_referencegrants.yaml
-    kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v0.7.0/config/crd/experimental/gateway.networking.k8s.io_tlsroutes.yaml
+    task local:add-gateway-crds
     ```
 
-### Install Cilium with Gateway API support on the Rancher Desktop Cluster
+### [Install Cilium](https://docs.cilium.io/en/stable/network/servicemesh/gateway-api/gateway-api/#gs-gateway-api) with Gateway API support on the Rancher Desktop Cluster
     
-    [Cilium install](https://docs.cilium.io/en/stable/network/servicemesh/gateway-api/gateway-api/#gs-gateway-api).
-
     #### Using Cilium CLI
 
     ```sh copy
-    cilium install --version 1.14.2 \
-        --set kubeProxyReplacement=true \
-        --set gatewayAPI.enabled=true
-    ```
-
-### Install Postgres
-
-    ```sh copy
-    helm upgrade -i --repo https://garunski-co.github.io/scry-helm-charts/ postgres postgres-local
+    task local:cilium-install
     ```
 
 ### Add Gateway API Class - if its missing from the cluster
+    <Callout type="warning" emoji="⚠️">
+    In my case, the class was missing from the cluster and cilium operator needs this to create the gateway.
+    </Callout>
 
     ```yaml copy filename="cilium-gateway-class.yaml" file=local/cilium-gateway-class.yaml
     ```
 
     ```sh copy
-    kubectl apply -f cilium-gateway-class.yaml
+    task local:add-missing-gateway-class
     ```
 
 ### Install Local Gateway 
@@ -65,7 +56,7 @@ import { Steps, Callout } from 'nextra/components'
     ```
 
     ```sh copy
-    kubectl apply -f local-gateway.yaml
+    task local:local-gateway-install
     ```
 
 ### Install Local Postgres DB
@@ -75,7 +66,7 @@ import { Steps, Callout } from 'nextra/components'
     </Callout>
 
     ```sh copy
-    helm upgrade -i --repo https://garunski-co.github.io/scry-helm-charts/ postgres postgres-local
+    task local:postgres-install
     ```
 
 ### Install Admin Directus
@@ -84,7 +75,7 @@ import { Steps, Callout } from 'nextra/components'
     ```
     
     ```sh copy
-    helm upgrade directus-admin directus-local -i --repo https://garunski-co.github.io/scry-helm-charts/ -f admin-values.yaml
+    task local:admin-install
     ```
 
 ### Install API Directus
@@ -93,10 +84,13 @@ import { Steps, Callout } from 'nextra/components'
     ```
     
     ```sh copy
-    helm upgrade directus-api directus-local -i --repo https://garunski-co.github.io/scry-helm-charts/ -f api-values.yaml
+    task local:api-install
     ```
 
 ### add gateway to Hosts
-    run tasks for udpateHosts
+    
+    ```sh copy
+    task local:update-hosts
+    ```
 
 </Steps>

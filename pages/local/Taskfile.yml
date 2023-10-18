@@ -1,22 +1,73 @@
 version: '3'
 
-vars: 
-  GATEWAY:
-    sh: kubectl get gateway directus-local-gw -o jsonpath='{.status.addresses[0].value}'
+vars:
   APPS: admin api
 
 tasks:
-  updateHosts:
-    deps: [removeOldHosts, addNewHosts]
+  add-rd-overwrite:
+    silent: true
+    cmds:
+      - cp override.yaml ~/Library/Application\ Support/rancher-desktop/lima/_config/override.yaml
 
-  removeOldHosts:
+  add-gateway-crds:
+    silent: true
+    cmds:
+      - kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v0.7.0/config/crd/standard/gateway.networking.k8s.io_gatewayclasses.yaml
+      - kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v0.7.0/config/crd/standard/gateway.networking.k8s.io_gateways.yaml
+      - kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v0.7.0/config/crd/standard/gateway.networking.k8s.io_httproutes.yaml
+      - kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v0.7.0/config/crd/standard/gateway.networking.k8s.io_referencegrants.yaml
+      - kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v0.7.0/config/crd/experimental/gateway.networking.k8s.io_tlsroutes.yaml
+ 
+  cilium-install:
+    silent: true
+    cmds:
+      - cilium install --version 1.14.2 --set kubeProxyReplacement=true --set gatewayAPI.enabled=true
+
+  postgres-install:
+    silent: true
+    cmds:
+      - helm upgrade -i --repo https://garunski-co.github.io/scry-helm-charts/ postgres postgres-local
+
+  add-missing-gateway-class:
+    silent: true
+    status: # this is not needed but an example of how to verify that commands need to be ran
+      - kubectl get gatewayclass cilium &> /dev/null
+    cmds:
+      - kubectl apply -f cilium-gateway-class.yaml
+
+  local-gateway-install:
+    silent: true
+    cmds:
+      - kubectl apply -f local-gateway.yaml
+
+  api-install:
+    silent: true
+    cmds:
+      - helm upgrade directus-api directus-local -i --repo https://garunski-co.github.io/scry-helm-charts/ -f api-values.yaml
+
+  admin-install:
+    silent: true
+    cmds:
+      - helm upgrade directus-admin directus-local -i --repo https://garunski-co.github.io/scry-helm-charts/ -f admin-values.yaml
+
+  update-hosts:
+    deps: [remove-old-hosts, add-new-hosts]
+
+  remove-old-hosts:
+    silent: true
+    requires:
+      vars: [ APPS ]
     cmds:
       - for: { var: APPS }
         cmd: sudo sed -i '' '/{{.ITEM}}\.local\.scryapp\.website/d' /etc/hosts
-    silent: true
 
-  addNewHosts:
+  add-new-hosts:
+    silent: true
+    vars: 
+      GATEWAY:
+        sh: kubectl get gateway scry-gw -o jsonpath='{.status.addresses[0].value}'
+    requires:
+      vars: [ APPS, GATEWAY ]
     cmds:
         - for: { var: APPS }
           cmd: sudo sh -c 'echo "{{.GATEWAY}} {{.ITEM}}.local.scryapp.website" >> /etc/hosts'
-    silent: true
