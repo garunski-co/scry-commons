@@ -67,7 +67,7 @@ tasks:
       GATEWAY:
         sh: kubectl get gateway scry-gw -o jsonpath='{.status.addresses[0].value}'
     requires:
-      vars: [ APPS, GATEWAY ]
+      vars: [ APPS ]
     cmds:
         - for: { var: APPS }
           cmd: sudo sh -c 'echo "{{.GATEWAY}} {{.ITEM}}.local.scryapp.website" >> /etc/hosts'

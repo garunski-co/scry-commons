@@ -30,8 +30,16 @@ ingress:
 gatewayApi:
   create: true
   host: admin.local.scryapp.website
+  annotations: {}
   gateway: 
     create: false
+    name: 'scry-gw'
+    namespace: 'default'
+  route:
+    matches:
+      - path: 
+          type: PathPrefix
+          value: /
 
 resources: {}
 
@@ -39,10 +47,11 @@ autoscaling:
   enabled: false
 
 env:
+  publicUrl: 'http://admin.local.scryapp.website'
   key: 'BB1AFE70-F462-4C98-9935-6902EADA57A5'
   secret: 'EF222AE9-10FB-4190-AD4C-C6E866D19EF2'
   dbClient: 'pg'
-  dbHost: 'postgres-local-postgresql-hl.default.svc.cluster.local'
+  dbHost: 'postgres-postgresql-hl.default.svc.cluster.local'
   dbPort: '5432'
   dbDatabase: 'scry'
   dbUser: 'scryuser'
