@@ -1,4 +1,4 @@
-# Scry Internal Documentation
+# [Scry Internal Documentation](https://garunski-co.github.io/scry-commons/)
 
 Welcome to the Internal Documenation for any guides and setups that are required or helpful for contribution toward the Scry Application project.
 
