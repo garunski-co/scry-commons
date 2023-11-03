@@ -1,0 +1,19 @@
+# 2. Authentication
+
+Date: 2023-10-27
+
+## Status
+
+Proposed
+
+## Context
+
+The are at least 2 seperate needs for authentication in the system. One is to authorize internal Scry specific users for access to the Content Management System with Google Workspaces as the initial authenticator. The other is end user authentication with various social logins and any other authentication scheme. 
+
+## Decision
+
+Use [Keycloak](https://www.keycloak.org/) to deletegate the authentication to various providers.
+
+## Consequences
+
+All systems must implement authetication with selected provider. 

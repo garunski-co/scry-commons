@@ -1,0 +1,31 @@
+{
+	"Architecture Decision Record": {
+		"scope": "markdown,mdx,md",
+		"prefix": "adr",
+		"body": [
+		  "import { Steps, Callout } from 'nextra/components';",
+		  "",
+		  "# 1. ${1:Title}",
+		  "",
+		  "Date: $CURRENT_YEAR-$CURRENT_MONTH-$CURRENT_DATE",
+		  "",
+		  "## Status",
+		  "",
+		  "${3:|Proposed,Accepted,Deprecated,Superseded|}",
+		  "",
+		  "## Context",
+		  "",
+		  "$4",
+		  "",
+		  "## Decision",
+		  "",
+		  "$5",
+		  "",
+		  "## Consequences",
+		  "",
+		  "$6",
+		  ""
+		],
+		"description": "Add an Architecture Decision Record"
+	  }
+}
