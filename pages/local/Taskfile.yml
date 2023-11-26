@@ -4,12 +4,13 @@ vars:
   APPS: admin api
 
 tasks:
-  1-add-rd-overwrite:
+  010-configure-rancher-desktop:
     silent: true
     cmds:
       - cp override.yaml ~/Library/Application\ Support/rancher-desktop/lima/_config/override.yaml
+      - rdctl api /v1/settings --method PUT --input {{.TASKFILE_DIR}}/settings.json
 
-  2-add-gateway-crds:
+  020-add-gateway-crds:
     silent: true
     cmds:
       - kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v0.7.0/config/crd/standard/gateway.networking.k8s.io_gatewayclasses.yaml
@@ -18,42 +19,43 @@ tasks:
       - kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v0.7.0/config/crd/standard/gateway.networking.k8s.io_referencegrants.yaml
       - kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v0.7.0/config/crd/experimental/gateway.networking.k8s.io_tlsroutes.yaml
  
-  3-cilium-install:
+  030-cilium-install:
     silent: true
     cmds:
       - cilium install --version 1.14.2 --set kubeProxyReplacement=true --set gatewayAPI.enabled=true
 
-  6-postgres-install:
+  060-postgres-install:
     silent: true
     cmds:
       - helm upgrade -i --set hostPath.path={{.ROOT_DIR}}/data/ --repo https://garunski-co.github.io/scry-helm-charts/ postgres postgres-local  
 
-  4-add-missing-gateway-class:
+  040-add-missing-gateway-class:
     silent: true
     status: # this is not needed but an example of how to verify that commands need to be ran
       - kubectl get gatewayclass cilium &> /dev/null
     cmds:
       - kubectl apply -f cilium-gateway-class.yaml
 
-  5-local-gateway-install:
+  050-local-gateway-install:
     silent: true
     cmds:
       - kubectl apply -f local-gateway.yaml
 
-  8-api-install:
+  080-api-install:
     silent: true
     cmds:
       - helm upgrade directus-api directus-local -i --repo https://garunski-co.github.io/scry-helm-charts/ -f api-values.yaml
 
-  7-admin-install:
+  070-admin-install:
     silent: true
     cmds:
       - helm upgrade directus-admin directus-local -i --repo https://garunski-co.github.io/scry-helm-charts/ -f admin-values.yaml
 
-  9-update-hosts:
+  090-update-hosts:
     deps: [remove-old-hosts, add-new-hosts]
 
   remove-old-hosts:
+    internal: true
     silent: true
     requires:
       vars: [ APPS ]
@@ -62,6 +64,7 @@ tasks:
         cmd: sudo sed -i '' '/{{.ITEM}}\.local\.scryapp\.website/d' /etc/hosts
 
   add-new-hosts:
+    internal: true
     silent: true
     vars: 
       GATEWAY:
@@ -71,3 +74,9 @@ tasks:
     cmds:
         - for: { var: APPS }
           cmd: sudo sh -c 'echo "{{.GATEWAY}} {{.ITEM}}.local.scryapp.website" >> /etc/hosts'
+  
+  910-reset-rancher-desktop:
+    silent: true
+    cmds:
+      - rdctl api /v1/factory_reset --method PUT --body {}
+  

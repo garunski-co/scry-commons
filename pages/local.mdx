@@ -3,14 +3,22 @@ import { Steps, Callout } from 'nextra/components'
 # Local MacOS install
 
 <Steps>
+
 ### Install [Task](https://taskfile.dev/)
+
+### Install [socket_vmnet](https://github.com/lima-vm/socket_vmnet#from-homebrew)
+
+    installing socket_vmnet fixed issues that i had with rancher after cilium replaced networking
+    ```
+    brew install socket_vmnet   
+    echo 'export PATH="/opt/homebrew/opt/socket_vmnet/bin:$PATH"' >> ~/.zshrc 
+    sudo brew services start socket_vmnet
+    sudo mkdir -p /opt/socket_vmnet/bin
+    sudo ln -s /opt/homebrew/opt/socket_vmnet/bin/socket_vmnet /opt/socket_vmnet/bin/socket_vmnet
+    ```
 
 ### Install [Rancher Desktop](https://github.com/rancher-sandbox/rancher-desktop/releases)
     
-    <Callout type="warning" emoji="⚠️">
-    For my local setup, I had to switch the Virtual Machine Emulation to use VZ for Rancher Desktop. Go to Preferences -> Virtual Machine -> Emulation and select VZ.
-    </Callout>
-
 ### [Cillium for Rancher Desktop](https://docs.cilium.io/en/stable/gettingstarted/k8s-install-default/#create-the-cluster)
     
     #### Instructions for the override file duplicated below
@@ -21,15 +29,13 @@ import { Steps, Callout } from 'nextra/components'
     ```
 
     ```sh copy
-    task local:1-add-rd-overwrite
+    task local:010-configure-rancher-desktop
     ```
-
-    Reset Kubernetes through the Diagnostics on the main configuration window in Rancher Desktop.
 
 ### Install CRDs for GatewayAPI
 
     ```sh copy
-    task local:2-add-gateway-crds
+    task local:020-add-gateway-crds
     ```
 
 ### [Install Cilium](https://docs.cilium.io/en/stable/network/servicemesh/gateway-api/gateway-api/#gs-gateway-api) with Gateway API support on the Rancher Desktop Cluster
@@ -37,7 +43,7 @@ import { Steps, Callout } from 'nextra/components'
     #### Using [Cilium CLI](https://docs.cilium.io/en/stable/gettingstarted/k8s-install-default/#install-the-cilium-cli)
 
     ```sh copy
-    task local:3-cilium-install
+    task local:030-cilium-install
     ```
 
 ### Add Gateway API Class - if its missing from the cluster
@@ -49,7 +55,7 @@ import { Steps, Callout } from 'nextra/components'
     ```
 
     ```sh copy
-    task local:4-add-missing-gateway-class
+    task local:040-add-missing-gateway-class
     ```
 
 ### Install Local Gateway 
@@ -58,7 +64,7 @@ import { Steps, Callout } from 'nextra/components'
     ```
 
     ```sh copy
-    task local:5-local-gateway-install
+    task local:050-local-gateway-install
     ```
 
 ### Install Local Postgres DB
@@ -68,7 +74,7 @@ import { Steps, Callout } from 'nextra/components'
     </Callout>
 
     ```sh copy
-    task local:6-postgres-install
+    task local:060-postgres-install
     ```
 
 ### Install Admin Directus
@@ -77,7 +83,7 @@ import { Steps, Callout } from 'nextra/components'
     ```
     
     ```sh copy
-    task local:7-admin-install
+    task local:070-admin-install
     ```
 
 ### Install API Directus
@@ -86,13 +92,13 @@ import { Steps, Callout } from 'nextra/components'
     ```
     
     ```sh copy
-    task local:8-api-install
+    task local:080-api-install
     ```
 
 ### add gateway to Hosts
     
     ```sh copy
-    task local:9-update-hosts
+    task local:090-update-hosts
     ```
 
 </Steps>

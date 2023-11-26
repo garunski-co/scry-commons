@@ -1,0 +1,100 @@
+{
+  "version": 10,
+  "application": {
+    "adminAccess": true,
+    "debug": false,
+    "extensions": {
+      "allowed": {
+        "enabled": false,
+        "list": []
+      },
+      "installed": {}
+    },
+    "pathManagementStrategy": "rcfiles",
+    "telemetry": {
+      "enabled": true
+    },
+    "updater": {
+      "enabled": true
+    },
+    "autoStart": false,
+    "startInBackground": false,
+    "hideNotificationIcon": false,
+    "window": {
+      "quitOnClose": false
+    }
+  },
+  "containerEngine": {
+    "allowedImages": {
+      "enabled": false,
+      "patterns": []
+    },
+    "name": "containerd"
+  },
+  "virtualMachine": {
+    "memoryInGB": 4,
+    "numberCPUs": 2,
+    "hostResolver": true
+  },
+  "WSL": {
+    "integrations": {}
+  },
+  "kubernetes": {
+    "version": "1.27.7",
+    "port": 6443,
+    "enabled": true,
+    "options": {
+      "traefik": false,
+      "flannel": false
+    },
+    "ingress": {
+      "localhostOnly": false
+    }
+  },
+  "portForwarding": {
+    "includeKubernetesServices": false
+  },
+  "images": {
+    "showAll": true,
+    "namespace": "k8s.io"
+  },
+  "diagnostics": {
+    "showMuted": false,
+    "mutedChecks": {}
+  },
+  "experimental": {
+    "virtualMachine": {
+      "type": "vz",
+      "useRosetta": true,
+      "socketVMNet": true,
+      "mount": {
+        "type": "virtiofs",
+        "9p": {
+          "securityModel": "none",
+          "protocolVersion": "9p2000.L",
+          "msizeInKib": 128,
+          "cacheMode": "mmap"
+        }
+      },
+      "networkingTunnel": false,
+      "proxy": {
+        "enabled": false,
+        "address": "",
+        "password": "",
+        "port": 3128,
+        "username": "",
+        "noproxy": [
+          "0.0.0.0/8",
+          "10.0.0.0/8",
+          "127.0.0.0/8",
+          "169.254.0.0/16",
+          "172.16.0.0/12",
+          "192.168.0.0/16",
+          "224.0.0.0/4",
+          "240.0.0.0/4"
+        ]
+      }
+    }
+  }
+}
+
